@@ -1,6 +1,6 @@
 ﻿using KayraExportThridStep.Application.CQRS.Commands;
 using KayraExportThridStep.Application.Interfaces;
-using KayraExportThridStep.Core.Entites;
+using KayraExportThridStep.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

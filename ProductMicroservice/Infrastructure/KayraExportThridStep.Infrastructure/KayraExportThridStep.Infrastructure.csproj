@@ -7,8 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Core\KayraExportThridStep.Core\KayraExportThridStep.Core.csproj" />
-    <ProjectReference Include="..\..\Core\KayraExportThridStep.Core\KayraExportThridStep.Core.csproj" />
+    <PackageReference Include="StackExchange.Redis" Version="2.10.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Application\KayraExportThridStep.Application\KayraExportThridStep.Application.csproj" />
   </ItemGroup>
 
 </Project>
