@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace KayraExportThridStep.Application.Interfaces
 {
-    public interface IRepository<T> where T:class
+    public interface ISqlConnectionFactory
     {
-        Task<List<T>> GetAllAsync();
-        Task<T?> GetByIdAsync(int id);
+        IDbConnection Create();
     }
 }

@@ -1,27 +1,23 @@
 ﻿using KayraExportThridStep.Application.CQRS.Commands;
 using KayraExportThridStep.Application.Interfaces;
-using KayraExportThridStep.Core.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MediatR;
 
 namespace KayraExportThridStep.Application.CQRS.Handlers
 {
     public class RemoveProductCommandHandler
+        : IRequestHandler<RemoveProductCommand, Unit>
     {
-        private readonly IRepository<Product> _repository;
+        private readonly IProductCommandRepository _commandRepository;
 
-        public RemoveProductCommandHandler(IRepository<Product> repository)
+        public RemoveProductCommandHandler(IProductCommandRepository commandRepository)
         {
-            _repository = repository;
+            _commandRepository = commandRepository;
         }
 
-        public async Task Handle(RemoveProductCommand command)
+        public async Task<Unit> Handle(RemoveProductCommand request,CancellationToken cancellationToken)
         {
-            var value = await _repository.GetByIdAsync(command.Id);
-            await _repository.DeleteAsync(value);
+            await _commandRepository.DeleteAsync(request.Id);
+            return Unit.Value;
         }
     }
 }

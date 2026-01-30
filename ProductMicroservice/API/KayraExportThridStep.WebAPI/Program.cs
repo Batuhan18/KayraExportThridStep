@@ -1,4 +1,7 @@
+using KayraExportThridStep.Application.CQRS.Handlers;
 using KayraExportThridStep.Application.CQRS.Service;
+using KayraExportThridStep.Application.Interfaces;
+using KayraExportThridStep.Core.Entities;
 using KayraExportThridStep.Infrastructure.Services;
 using StackExchange.Redis;
 
@@ -12,8 +15,36 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(
-    ConnectionMultiplexer.Connect("localhost:6379")
+    ConnectionMultiplexer.Connect(
+        builder.Configuration.GetConnectionString("Redis")
+    )
 );
+
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(
+        typeof(GetProductQueryHandler).Assembly
+    );
+});
+
+
+builder.Services.AddScoped(typeof(IRepository<>), sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+    var connStr = config.GetConnectionString("SqlServer");
+
+    return Activator.CreateInstance(
+        typeof(Repository<>).MakeGenericType(
+            sp.GetType().GenericTypeArguments),
+        connStr
+    )!;
+});
+
+builder.Services.AddScoped<IProductCommandRepository>(sp =>
+    new ProductCommandRepository(
+        builder.Configuration.GetConnectionString("SqlServer")));
+
+
 builder.Services.AddScoped<ICacheService, CacheService>();
 
 var app = builder.Build();

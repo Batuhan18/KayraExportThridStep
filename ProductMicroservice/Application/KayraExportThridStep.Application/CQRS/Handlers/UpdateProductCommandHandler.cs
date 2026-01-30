@@ -1,30 +1,23 @@
 ﻿using KayraExportThridStep.Application.CQRS.Commands;
 using KayraExportThridStep.Application.Interfaces;
-using KayraExportThridStep.Core.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MediatR;
 
 namespace KayraExportThridStep.Application.CQRS.Handlers
 {
     public class UpdateProductCommandHandler
+        : IRequestHandler<UpdateProductCommand, Unit>
     {
-        private readonly IRepository<Product> _repository;
+        private readonly IProductCommandRepository _commandRepository;
 
-        public UpdateProductCommandHandler(IRepository<Product> repository)
+        public UpdateProductCommandHandler(IProductCommandRepository commandRepository)
         {
-            _repository = repository;
+            _commandRepository = commandRepository;
         }
 
-        public async Task Handle(UpdateProductCommand command)
+        public async Task<Unit> Handle(UpdateProductCommand request,CancellationToken cancellationToken)
         {
-            var values = await _repository.GetByIdAsync(command.ProductId);
-            values.ProductName = command.ProductName;
-            values.ProductPrice = command.ProductPrice;
-            values.ProductImageUrl = command.ProductImageUrl;
-            await _repository.UpdateAsync(values);
+            await _commandRepository.UpdateAsync(request);
+            return Unit.Value;
         }
     }
 }

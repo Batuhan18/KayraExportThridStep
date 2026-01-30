@@ -32,9 +32,7 @@ namespace KayraExportThridStep.Infrastructure.Services
 
         public async Task SetAsync<T>(string key, T value, TimeSpan expiration)
         {
-            await _database.StringSetAsync(
-          key,
-          JsonSerializer.Serialize(value));
+            await _database.StringSetAsync(key, JsonSerializer.Serialize(value));
         }
     }
 }
