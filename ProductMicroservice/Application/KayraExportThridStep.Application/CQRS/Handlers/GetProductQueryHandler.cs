@@ -24,8 +24,7 @@ namespace KayraExportThridStep.Application.CQRS.Handlers
         {
             var cacheKey = "products_all";
 
-            var cached =
-                await _cache.GetAsync<List<GetProductQueryResult>>(cacheKey);
+            var cached = await _cache.GetAsync<List<GetProductQueryResult>>(cacheKey);
 
             if (cached != null)
                 return cached;

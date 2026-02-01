@@ -1,4 +1,4 @@
-using KayraExportThridStep.Application.CQRS.Handlers;
+﻿using KayraExportThridStep.Application.CQRS.Handlers;
 using KayraExportThridStep.Application.CQRS.Service;
 using KayraExportThridStep.Application.Interfaces;
 using KayraExportThridStep.Infrastructure.Services;
@@ -11,8 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IProductCommandRepository, ProductCommandRepository>();
 
-// Redis
+//Redis
 builder.Services.AddSingleton<IConnectionMultiplexer>(
     ConnectionMultiplexer.Connect(
         builder.Configuration.GetConnectionString("Redis")
@@ -25,25 +26,11 @@ builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(GetProductQueryHandler).Assembly);
 });
 
-// Generic Repository
-builder.Services.AddScoped(typeof(IRepository<>), sp =>
-{
-    var config = sp.GetRequiredService<IConfiguration>();
-    var connStr = config.GetConnectionString("SqlServer");
-
-    return Activator.CreateInstance(
-        typeof(Repository<>).MakeGenericType(
-            sp.GetType().GenericTypeArguments),
-        connStr
-    )!;
-});
+// ✅ DOĞRU GENERIC REPOSITORY KAYDI
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 // Command Repository
-builder.Services.AddScoped<IProductCommandRepository>(sp =>
-    new ProductCommandRepository(
-        builder.Configuration.GetConnectionString("SqlServer")
-    )
-);
+builder.Services.AddScoped<IProductCommandRepository, ProductCommandRepository>();
 
 // Cache
 builder.Services.AddScoped<ICacheService, CacheService>();
@@ -60,3 +47,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
+
+
+
+

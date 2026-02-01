@@ -12,36 +12,51 @@ namespace KayraExportThridStep.WebAPI.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IRepository<Product> _repository;
+        private readonly IProductCommandRepository _productCommandRepository;
         private readonly IMediator _mediator;
 
-        public ProductsController(IRepository<Product> repository, IMediator mediator)
+        public ProductsController(IRepository<Product> repository, IMediator mediator, IProductCommandRepository productCommandRepository)
         {
             _repository = repository;
             _mediator = mediator;
+            _productCommandRepository = productCommandRepository;
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateProduct(CreateProductCommand create)
         {
             var values = await _mediator.Send(create);
-            return Ok(values);
+            return Ok("Ürün başarıyla eklendi.");
         }
 
         [HttpPut]
         public async Task<IActionResult> UpdateProduct(UpdateProductCommand update)
         {
             await _mediator.Send(update);
-            return NoContent();
+            return Ok("Ürün başarıyla güncellendi.");
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> GetProduct()
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var product = await _repository.GetByIdAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            await _productCommandRepository.DeleteAsync(id);
+            return Ok("Ürün başarıyla silindi.");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllProducts()
         {
             var values = await _repository.GetAllAsync();
             return Ok(values);
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdProduct(int id)
         {
             var values = await _repository.GetByIdAsync(id);

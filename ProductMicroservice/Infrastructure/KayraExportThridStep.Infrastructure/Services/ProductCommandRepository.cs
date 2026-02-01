@@ -1,6 +1,7 @@
 ﻿using KayraExportThridStep.Application.CQRS.Commands;
 using KayraExportThridStep.Application.Interfaces;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using System.Data;
 
 namespace KayraExportThridStep.Infrastructure.Services
@@ -9,9 +10,10 @@ namespace KayraExportThridStep.Infrastructure.Services
     {
         private readonly string _connectionString;
 
-        public ProductCommandRepository(string connectionString)
+        public ProductCommandRepository(IConfiguration configuration)
         {
-            _connectionString = connectionString;
+            _connectionString = configuration.GetConnectionString("SqlServer")
+               ?? throw new Exception("SqlServer connection string not found");
         }
 
         public async Task<int> CreateAsync(CreateProductCommand command)

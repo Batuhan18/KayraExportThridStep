@@ -12,8 +12,8 @@ namespace KayraExportThridStep.Application.CQRS.Handlers
         private readonly ICacheService _cache;
 
         public CreateProductCommandHandler(
-            IProductCommandRepository productCommandRepository,
-            ICacheService cache)
+            IProductCommandRepository productCommandRepository, ICacheService cache
+            )
         {
             _productCommandRepository = productCommandRepository;
             _cache = cache;
@@ -25,7 +25,7 @@ namespace KayraExportThridStep.Application.CQRS.Handlers
         {
             var id = await _productCommandRepository.CreateAsync(request);
 
-            //  cache invalidation
+            //cache invalidation
             await _cache.RemoveAsync("products_all");
 
             return id;
