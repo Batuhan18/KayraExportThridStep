@@ -1,12 +1,7 @@
 ﻿using KayraExportThridStep.Application.CQRS.Commands;
 using KayraExportThridStep.Application.Interfaces;
 using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KayraExportThridStep.Infrastructure.Services
 {
@@ -25,14 +20,13 @@ namespace KayraExportThridStep.Infrastructure.Services
             using var cmd = new SqlCommand("sp_Product_Create", connection);
 
             cmd.CommandType = CommandType.StoredProcedure;
-
             cmd.Parameters.AddWithValue("@ProductName", command.ProductName);
             cmd.Parameters.AddWithValue("@ProductPrice", command.ProductPrice);
             cmd.Parameters.AddWithValue("@ProductImageUrl", command.ProductImageUrl);
 
             await connection.OpenAsync();
-
             var result = await cmd.ExecuteScalarAsync();
+
             return Convert.ToInt32(result);
         }
 
@@ -54,7 +48,6 @@ namespace KayraExportThridStep.Infrastructure.Services
             using var cmd = new SqlCommand("sp_Product_Update", connection);
 
             cmd.CommandType = CommandType.StoredProcedure;
-
             cmd.Parameters.AddWithValue("@ProductId", command.ProductId);
             cmd.Parameters.AddWithValue("@ProductName", command.ProductName);
             cmd.Parameters.AddWithValue("@ProductPrice", command.ProductPrice);

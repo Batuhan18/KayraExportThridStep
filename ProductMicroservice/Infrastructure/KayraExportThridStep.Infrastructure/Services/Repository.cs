@@ -1,11 +1,6 @@
 ﻿using KayraExportThridStep.Application.Interfaces;
 using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KayraExportThridStep.Infrastructure.Services
 {
@@ -14,10 +9,10 @@ namespace KayraExportThridStep.Infrastructure.Services
         private readonly string _connectionString;
         private readonly string _tableName;
 
-        public Repository(string connectionString, string tableName)
+        public Repository(string connectionString)
         {
             _connectionString = connectionString;
-            _tableName = tableName;
+            _tableName = typeof(T).Name; 
         }
 
         public async Task<List<T>> GetAllAsync()
