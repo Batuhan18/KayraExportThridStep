@@ -1,31 +1,18 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-WORKDIR /app
-EXPOSE 80
-EXPOSE 443
-
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy csproj files
-COPY ["LogMicroservice/KayraExportThirdStep.Log.API/KayraExportThirdStep.Log.API.csproj", "LogMicroservice/KayraExportThirdStep.Log.API/"]
-COPY ["LogMicroservice/KayraExportThirdStep.Log.Application/KayraExportThirdStep.Log.Application.csproj", "LogMicroservice/KayraExportThirdStep.Log.Application/"]
-COPY ["LogMicroservice/KayraExportThirdStep.Log.Core/KayraExportThirdStep.Log.Core.csproj", "LogMicroservice/KayraExportThirdStep.Log.Core/"]
-COPY ["LogMicroservice/KayraExportThirdStep.Log.Infrastructure/KayraExportThirdStep.Log.Infrastructure.csproj", "LogMicroservice/KayraExportThirdStep.Log.Infrastructure/"]
+COPY API/KayraExportThridStep.Log.API/*.csproj API/KayraExportThridStep.Log.API/
+COPY Application/*.csproj Application/
+COPY Core/*.csproj Core/
+COPY Infrastructure/*.csproj Infrastructure/
 
-# Restore
-RUN dotnet restore "LogMicroservice/KayraExportThirdStep.Log.API/KayraExportThirdStep.Log.API.csproj"
+RUN dotnet restore API/KayraExportThridStep.Log.API/KayraExportThridStep.Log.API.csproj
 
-# Copy everything
 COPY . .
+WORKDIR /src/API/KayraExportThridStep.Log.API
+RUN dotnet publish -c Release -o /app/publish
 
-# Build
-WORKDIR "/src/LogMicroservice/KayraExportThirdStep.Log.API"
-RUN dotnet build "KayraExportThirdStep.Log.API.csproj" -c Release -o /app/build
-
-FROM build AS publish
-RUN dotnet publish "KayraExportThirdStep.Log.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
-
-FROM base AS final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "KayraExportThirdStep.Log.API.dll"]
+COPY --from=build /app/publish .
+ENTRYPOINT ["dotnet", "KayraExportThridStep.Log.API.dll"]

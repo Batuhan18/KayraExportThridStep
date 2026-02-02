@@ -7,7 +7,7 @@ services:
       SA_PASSWORD: "123456Aa*"
       MSSQL_PID: "Developer"
     ports:
-      - "1433:1433"
+      - "1435:1433"
     volumes:
       - sqlserver-data:/var/opt/mssql
     networks:
@@ -17,7 +17,7 @@ services:
     image: redis:7
     container_name: kayra-redis
     ports:
-      - "6379:6379"
+      - "6380:6379"
     volumes:
       - redis-data:/data
     networks:
@@ -41,7 +41,7 @@ services:
 
   product-service:
     build:
-      context: ./ProductMicroservice
+      context: ./ProductMicroservice/KayraExportThridStep
       dockerfile: API/KayraExportThridStep.WebAPI/Dockerfile
     container_name: kayra-product-service
     environment:
@@ -75,8 +75,8 @@ services:
 
   api-gateway:
     build:
-      context: .
-      dockerfile: APIGateway/KayraExportThridStep.APIGateway/Dockerfile
+      context: ./APIGateway
+      dockerfile: /KayraExportThridStep.APIGateway/Dockerfile
     container_name: kayra-api-gateway
     ports:
       - "5000:80"
@@ -86,6 +86,9 @@ services:
       - log-service
     networks:
       - kayra-network
+
+
+
 
 networks:
   kayra-network:

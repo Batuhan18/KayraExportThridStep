@@ -1,15 +1,15 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-COPY ProductMicroservice/API/KayraExportThridStep.WebAPI/KayraExportThridStep.WebAPI.csproj ProductMicroservice/API/KayraExportThridStep.WebAPI/
-COPY ProductMicroservice/Application/KayraExportThridStep.Application.csproj ProductMicroservice/Application/
-COPY ProductMicroservice/Core/KayraExportThridStep.Core.csproj ProductMicroservice/Core/
-COPY ProductMicroservice/Infrastructure/KayraExportThridStep.Infrastructure.csproj ProductMicroservice/Infrastructure/
+COPY Application/*.csproj Application/
+COPY Core/*.csproj Core/
+COPY Infrastructure/*.csproj Infrastructure/
+COPY API/KayraExportThridStep.WebAPI/*.csproj API/KayraExportThridStep.WebAPI/
 
-RUN dotnet restore ProductMicroservice/API/KayraExportThridStep.WebAPI/KayraExportThridStep.WebAPI.csproj
+RUN dotnet restore API/KayraExportThridStep.WebAPI/KayraExportThridStep.WebAPI.csproj
 
 COPY . .
-WORKDIR /src/ProductMicroservice/API/KayraExportThridStep.WebAPI
+WORKDIR /src/API/KayraExportThridStep.WebAPI
 RUN dotnet publish -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0

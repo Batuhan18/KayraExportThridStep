@@ -1,31 +1,21 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-WORKDIR /app
-EXPOSE 80
-EXPOSE 443
-
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy csproj files
-COPY ["AuthMicroservice/KayraExportThirdStep.Auth.API/KayraExportThirdStep.Auth.API.csproj", "AuthMicroservice/KayraExportThirdStep.Auth.API/"]
-COPY ["AuthMicroservice/KayraExportThirdStep.Auth.Application/KayraExportThirdStep.Auth.Application.csproj", "AuthMicroservice/KayraExportThirdStep.Auth.Application/"]
-COPY ["AuthMicroservice/KayraExportThirdStep.Auth.Core/KayraExportThirdStep.Auth.Core.csproj", "AuthMicroservice/KayraExportThirdStep.Auth.Core/"]
-COPY ["AuthMicroservice/KayraExportThirdStep.Auth.Infrastructure/KayraExportThirdStep.Auth.Infrastructure.csproj", "AuthMicroservice/KayraExportThirdStep.Auth.Infrastructure/"]
+COPY KayraExportThirdStep.Auth.API/*.csproj KayraExportThirdStep.Auth.API/
+COPY KayraExportThridStep.Auth.Application/*.csproj KayraExportThridStep.Auth.Application/
+COPY KayraExportThridStep.Auth.Core/*.csproj KayraExportThridStep.Auth.Core/
+COPY KayraExportThridStep.Auth.Infrastructure/*.csproj KayraExportThridStep.Auth.Infrastructure/
 
-# Restore
-RUN dotnet restore "AuthMicroservice/KayraExportThirdStep.Auth.API/KayraExportThirdStep.Auth.API.csproj"
+WORKDIR /src/KayraExportThirdStep.Auth.API
+RUN dotnet restore
 
-# Copy everything else
+WORKDIR /src
 COPY . .
 
-# Build
-WORKDIR "/src/AuthMicroservice/KayraExportThirdStep.Auth.API"
-RUN dotnet build "KayraExportThirdStep.Auth.API.csproj" -c Release -o /app/build
+WORKDIR /src/KayraExportThirdStep.Auth.API
+RUN dotnet publish -c Release -o /app/publish
 
-FROM build AS publish
-RUN dotnet publish "KayraExportThirdStep.Auth.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
-
-FROM base AS final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "KayraExportThirdStep.Auth.API.dll"]
