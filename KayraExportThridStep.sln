@@ -57,6 +57,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KayraExportThridStep.Log.Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KayraExportThridStep.Log.Infrastructure", "LogMicroservice\Infrastructure\KayraExportThridStep.Log.Infrastructure\KayraExportThridStep.Log.Infrastructure.csproj", "{2C473441-E254-4C92-BE9C-87927DC9DBED}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "APIGateway", "APIGateway", "{897E2DB6-A30A-4962-8226-FFE723D1596F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KayraExportThridStep.APIGateway", "APIGateway\KayraExportThridStep.APIGateway\KayraExportThridStep.APIGateway.csproj", "{253950E6-4947-481A-9201-3BD9424E212E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +115,10 @@ Global
 		{2C473441-E254-4C92-BE9C-87927DC9DBED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C473441-E254-4C92-BE9C-87927DC9DBED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C473441-E254-4C92-BE9C-87927DC9DBED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{253950E6-4947-481A-9201-3BD9424E212E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{253950E6-4947-481A-9201-3BD9424E212E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{253950E6-4947-481A-9201-3BD9424E212E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{253950E6-4947-481A-9201-3BD9424E212E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -140,6 +148,7 @@ Global
 		{B8B8FFD2-FEE6-42F2-8212-53A348D90038} = {008F35FF-065E-4A38-8A21-F25393587C13}
 		{FBDADB49-FEBF-4B39-AD0D-4D3854A4F847} = {CDB91BA3-E59C-4E88-AD46-F338B9F2085E}
 		{2C473441-E254-4C92-BE9C-87927DC9DBED} = {2B9C9F38-A91F-471D-836B-B66E88D4E902}
+		{253950E6-4947-481A-9201-3BD9424E212E} = {897E2DB6-A30A-4962-8226-FFE723D1596F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {357BB12A-F902-4F30-8918-60191BCC418E}

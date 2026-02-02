@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: kayra-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=123456Aa*
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - kayra-network
+
+  redis:
+    image: redis:latest
+    container_name: kayra-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - kayra-network
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: AuthMicroservice/KayraExportThirdStep.Auth.API/Dockerfile
+    container_name: kayra-auth-service
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - "5001:80"
+    depends_on:
+      - sqlserver
+    networks:
+      - kayra-network
+
+  product-service:
+    build:
+      context: .
+      dockerfile: ProductMicroservice/API/Dockerfile
+    container_name: kayra-product-service
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - "5002:80"
+    depends_on:
+      - sqlserver
+      - redis
+    networks:
+      - kayra-network
+
+  log-service:
+    build:
+      context: .
+      dockerfile: LogMicroservice/KayraExportThridStep.Log.API/Dockerfile  
+    container_name: kayra-log-service
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - "5003:80"
+    depends_on:
+      - sqlserver
+    networks:
+      - kayra-network
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: APIGateway/KayraExportThridStep.APIGateway/Dockerfile
+    container_name: kayra-api-gateway
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - "5000:80"
+    depends_on:
+      - auth-service
+      - product-service
+      - log-service
+    networks:
+      - kayra-network
+
+networks:
+  kayra-network:
+    driver: bridge
+
+volumes:
+  sqlserver-data:
+  redis-data:

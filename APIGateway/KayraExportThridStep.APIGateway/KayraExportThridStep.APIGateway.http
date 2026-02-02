@@ -1,0 +1,6 @@
+@KayraExportThridStep.APIGateway_HostAddress = http://localhost:5082
+
+GET {{KayraExportThridStep.APIGateway_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
