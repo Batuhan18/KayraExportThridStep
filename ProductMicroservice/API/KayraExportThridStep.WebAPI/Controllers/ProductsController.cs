@@ -2,6 +2,7 @@
 using KayraExportThridStep.Application.Interfaces;
 using KayraExportThridStep.Core.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,7 +22,7 @@ namespace KayraExportThridStep.WebAPI.Controllers
             _mediator = mediator;
             _productCommandRepository = productCommandRepository;
         }
-
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> CreateProduct(CreateProductCommand create)
         {
@@ -29,13 +30,14 @@ namespace KayraExportThridStep.WebAPI.Controllers
             return Ok("Ürün başarıyla eklendi.");
         }
 
+        [Authorize]
         [HttpPut]
         public async Task<IActionResult> UpdateProduct(UpdateProductCommand update)
         {
             await _mediator.Send(update);
             return Ok("Ürün başarıyla güncellendi.");
         }
-
+        [AllowAnonymous]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
@@ -48,14 +50,14 @@ namespace KayraExportThridStep.WebAPI.Controllers
             await _productCommandRepository.DeleteAsync(id);
             return Ok("Ürün başarıyla silindi.");
         }
-
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAllProducts()
         {
             var values = await _repository.GetAllAsync();
             return Ok(values);
         }
-
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdProduct(int id)
         {

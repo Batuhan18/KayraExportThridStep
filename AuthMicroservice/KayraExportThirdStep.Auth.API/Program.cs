@@ -1,7 +1,11 @@
+using KayraExportThirdStep.Auth.Infrastructure.Data;
 using KayraExportThridStep.Auth.Application.Interfaces;
 using KayraExportThridStep.Auth.Application.Services;
+using KayraExportThridStep.Auth.Core.Entities;
 using KayraExportThridStep.Auth.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -14,11 +18,32 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// JWT Token Service
-builder.Services.AddScoped<JwtTokenService>();
+builder.Services.AddDbContext<Context>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
 
-// User Service
-builder.Services.AddScoped<IUserService, UserService>();
+
+// Identity
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    // Þifre politikalarý
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 6;
+
+    // Kullanýcý ayarlarý
+    options.User.RequireUniqueEmail = true;
+
+    // Lockout ayarlarý
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+})
+.AddEntityFrameworkStores<Context>()
+.AddDefaultTokenProviders();
+
+
+builder.Services.AddScoped<JwtTokenService>();
 
 // JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

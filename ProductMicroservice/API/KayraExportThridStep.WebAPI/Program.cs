@@ -1,16 +1,72 @@
 ﻿using KayraExportThridStep.Application.CQRS.Handlers;
 using KayraExportThridStep.Application.CQRS.Service;
 using KayraExportThridStep.Application.Interfaces;
+using KayraExportThridStep.Core.Entities;
 using KayraExportThridStep.Infrastructure.Services;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Controllers & Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    // Swagger JWT desteği
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+        Name = "Authorization",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+    //c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    //{
+    //    Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+    //    Name = "Authorization",
+    //    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+    //    Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+    //    Scheme = "Bearer"
+    //});
+    //c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    //{
+    //    {
+    //        new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    //        {
+    //            Reference = new Microsoft.OpenApi.Models.OpenApiReference
+    //            {
+    //                Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+    //                Id = "Bearer"
+    //            }
+    //        },
+    //        Array.Empty<string>()
+    //    }
+    //});
+});
+
+// JWT Authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+            ValidAudience = builder.Configuration["JwtSettings:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"]))
+        };
+    });
+builder.Services.AddAuthorization();
+
 builder.Services.AddScoped<IProductCommandRepository, ProductCommandRepository>();
 
 //Redis
@@ -27,7 +83,7 @@ builder.Services.AddMediatR(cfg =>
 });
 
 // ✅ DOĞRU GENERIC REPOSITORY KAYDI
-builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped(typeof(IRepository<Product>), typeof(Repository<Product>));
 
 // Command Repository
 builder.Services.AddScoped<IProductCommandRepository, ProductCommandRepository>();
