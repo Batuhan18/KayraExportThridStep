@@ -6,6 +6,7 @@ using KayraExportThridStep.Infrastructure.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using StackExchange.Redis;
 using System.Text;
 
@@ -48,6 +49,13 @@ builder.Services.AddSwaggerGen(c =>
     //    }
     //});
 });
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.WithProperty("ServiceName", "ProductMicroservice")
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 // JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

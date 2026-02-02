@@ -3,8 +3,8 @@ using KayraExportThridStep.Application.Interfaces;
 using KayraExportThridStep.Core.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace KayraExportThridStep.WebAPI.Controllers
 {
@@ -26,8 +26,18 @@ namespace KayraExportThridStep.WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateProduct(CreateProductCommand create)
         {
-            var values = await _mediator.Send(create);
-            return Ok("Ürün başarıyla eklendi.");
+            try
+            {
+                Log.Information("Ürün ekle: {@Product}", create);
+                var values = await _mediator.Send(create);
+                Log.Information("Ürün başarıyla eklendi: {ProductId}", values);
+                return Ok(values);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Ürün eklenirken hata oluştu: {@Product}", create);
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         [Authorize]
