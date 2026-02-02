@@ -1,13 +1,11 @@
-version: '3.8'
-
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: kayra-sqlserver
     environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=123456Aa*
-      - MSSQL_PID=Developer
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "123456Aa*"
+      MSSQL_PID: "Developer"
     ports:
       - "1433:1433"
     volumes:
@@ -16,7 +14,7 @@ services:
       - kayra-network
 
   redis:
-    image: redis:latest
+    image: redis:7
     container_name: kayra-redis
     ports:
       - "6379:6379"
@@ -27,12 +25,13 @@ services:
 
   auth-service:
     build:
-      context: .
-      dockerfile: AuthMicroservice/KayraExportThirdStep.Auth.API/Dockerfile
+      context: ./AuthMicroservice
+      dockerfile: KayraExportThirdStep.Auth.API/Dockerfile
     container_name: kayra-auth-service
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:80
+      ConnectionStrings__SqlServer: "Server=sqlserver;Database=AuthDb;User Id=sa;Password=123456Aa*"
     ports:
       - "5001:80"
     depends_on:
@@ -42,12 +41,14 @@ services:
 
   product-service:
     build:
-      context: .
-      dockerfile: ProductMicroservice/API/Dockerfile
+      context: ./ProductMicroservice
+      dockerfile: API/KayraExportThridStep.WebAPI/Dockerfile
     container_name: kayra-product-service
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:80
+      ConnectionStrings__SqlServer: "Server=sqlserver;Database=ProductDb;User Id=sa;Password=123456Aa*"
+      Redis__Configuration: "redis:6379"
     ports:
       - "5002:80"
     depends_on:
@@ -58,12 +59,13 @@ services:
 
   log-service:
     build:
-      context: .
-      dockerfile: LogMicroservice/KayraExportThridStep.Log.API/Dockerfile  
+      context: ./LogMicroservice
+      dockerfile: API/KayraExportThridStep.Log.API/Dockerfile
     container_name: kayra-log-service
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:80
+      ConnectionStrings__SqlServer: "Server=sqlserver;Database=LogDb;User Id=sa;Password=123456Aa*"
     ports:
       - "5003:80"
     depends_on:
@@ -76,9 +78,6 @@ services:
       context: .
       dockerfile: APIGateway/KayraExportThridStep.APIGateway/Dockerfile
     container_name: kayra-api-gateway
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
     ports:
       - "5000:80"
     depends_on:
